@@ -6,14 +6,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements ChatFragment.OnButtonClickedListener{
 
    /**
     * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -30,6 +26,7 @@ public class MainActivity extends FragmentActivity {
     */
    ViewPager mViewPager;
    Fragment fragment;
+   private int numPages;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +41,8 @@ public class MainActivity extends FragmentActivity {
       // Set up the ViewPager with the sections adapter.
       mViewPager = (ViewPager) findViewById(R.id.pager);
       mViewPager.setAdapter(mSectionsPagerAdapter);
-
+      
+      numPages = 1;
    }
 
    @Override
@@ -69,23 +67,17 @@ public class MainActivity extends FragmentActivity {
          // getItem is called to instantiate the fragment for the given page.
          // Return a DummySectionFragment (defined as a static inner class
          // below) with the page number as its lone argument.
-         //Fragment fragment;
-         if (position < 2) {
-             fragment = new DummySectionFragment();
-         }
-         else {
-             fragment = new ChatFragment();
-         }
+         fragment = new ChatFragment();
          Bundle args = new Bundle();
-         args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+         args.putInt("Section", position + 1);
          fragment.setArguments(args);
          return fragment;
       }
 
       @Override
       public int getCount() {
-         // Show 3 total pages.
-         return 3;
+         // Show total pages.
+         return numPages;
       }
 
       @Override
@@ -97,36 +89,16 @@ public class MainActivity extends FragmentActivity {
             return getString(R.string.title_section2).toUpperCase();
          case 2:
             return getString(R.string.app_name).toUpperCase();
+         default :
+             return "SECTION" + Integer.valueOf(position);
          }
-         return null;
       }
    }
-
-   /**
-    * A dummy fragment representing a section of the app, but that simply
-    * displays dummy text.
-    */
-   public static class DummySectionFragment extends Fragment {
-      /**
-       * The fragment argument representing the section number for this
-       * fragment.
-       */
-      public static final String ARG_SECTION_NUMBER = "section_number";
-
-      public DummySectionFragment() {
-          
-      }
-
-      @Override
-      public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-         // Create a new TextView and set its text to the fragment's section
-         // number argument value.
-         TextView textView = new TextView(getActivity());
-         textView.setGravity(Gravity.CENTER);
-         textView.setText(Integer.toString(getArguments().getInt(
-               ARG_SECTION_NUMBER)));
-         return textView;
-      }
+   
+   @Override 
+   public void createFragment() {
+       Log.i("iRC", "Create Frag");
+       numPages++;
+       mSectionsPagerAdapter.notifyDataSetChanged();
    }
 }
